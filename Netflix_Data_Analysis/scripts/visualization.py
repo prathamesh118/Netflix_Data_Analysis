@@ -1,0 +1,95 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import os
+
+def generate_charts(cleaned_path):
+    df = pd.read_csv(cleaned_path)
+    output_dir = "output/charts"
+    os.makedirs(output_dir, exist_ok=True)
+
+    sns.set_style("whitegrid")
+
+    plt.figure(figsize=(8, 6))
+    df['type'].value_counts().plot(kind='bar', color=['#E50914', '#221F1F'])
+    plt.title('Content Type Distribution')
+    plt.xlabel('Type')
+    plt.ylabel('Count')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/content_type.png")
+    plt.close()
+
+    df['date_added'] = pd.to_datetime(df['date_added'], errors='coerce')
+    yearly = df['date_added'].dt.year.value_counts().sort_index()
+    plt.figure(figsize=(12, 6))
+    yearly.plot(kind='line', marker='o', color='#E50914')
+    plt.title('Yearly Releases on Netflix')
+    plt.xlabel('Year')
+    plt.ylabel('Number of Titles')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/yearly_releases.png")
+    plt.close()
+
+    countries = df['country'].str.split(',').explode().str.strip().value_counts().head(10)
+    plt.figure(figsize=(10, 6))
+    countries.plot(kind='barh', color='#E50914')
+    plt.title('Top 10 Countries')
+    plt.xlabel('Count')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/top_countries.png")
+    plt.close()
+
+    genres = df['listed_in'].str.split(',').explode().str.strip().value_counts().head(10)
+    plt.figure(figsize=(10, 6))
+    genres.plot(kind='barh', color='#E50914')
+    plt.title('Top 10 Genres')
+    plt.xlabel('Count')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/top_genres.png")
+    plt.close()
+
+    plt.figure(figsize=(10, 6))
+    df['rating'].value_counts().head(10).plot(kind='bar', color='#E50914')
+    plt.title('Ratings Distribution')
+    plt.xlabel('Rating')
+    plt.ylabel('Count')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/ratings_distribution.png")
+    plt.close()
+
+    monthly = df['date_added'].dt.month.value_counts().sort_index()
+    plt.figure(figsize=(10, 6))
+    monthly.plot(kind='bar', color='#E50914')
+    plt.title('Monthly Additions')
+    plt.xlabel('Month')
+    plt.ylabel('Count')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/monthly_additions.png")
+    plt.close()
+
+    directors = df['director'].str.split(',').explode().str.strip().value_counts().head(10)
+    plt.figure(figsize=(10, 6))
+    directors.plot(kind='barh', color='#E50914')
+    plt.title('Top 10 Directors')
+    plt.xlabel('Count')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/top_directors.png")
+    plt.close()
+
+    actors = df['cast'].str.split(',').explode().str.strip().value_counts().head(10)
+    plt.figure(figsize=(10, 6))
+    actors.plot(kind='barh', color='#E50914')
+    plt.title('Top 10 Actors')
+    plt.xlabel('Count')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/top_actors.png")
+    plt.close()
+
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(df.isnull(), cbar=True, yticklabels=False, cmap='viridis')
+    plt.title('Heatmap of Missing Values')
+    plt.tight_layout()
+    plt.savefig(f"{output_dir}/heatmap_missing_values.png")
+    plt.close()
+
+    print(f"Charts saved to {output_dir}/")
